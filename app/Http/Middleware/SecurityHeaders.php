@@ -23,13 +23,13 @@ class SecurityHeaders
         // Protection XSS (navigateur)
         $response->header('X-XSS-Protection', '1; mode=block');
 
-        // Content Security Policy - Strict
+        // Content Security Policy - Permissive for Filament
         $csp = "default-src 'self'; "
-             . "script-src 'self'; "
-             . "style-src 'self' fonts.bunny.net; "
-             . "font-src fonts.bunny.net; "
-             . "img-src 'self' data:; "
-             . "connect-src 'self'; "
+             . "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+             . "style-src 'self' 'unsafe-inline' fonts.bunny.net; "
+             . "font-src fonts.bunny.net data:; "
+             . "img-src 'self' data: https:; "
+             . "connect-src 'self' https:; "
              . "frame-ancestors 'none'; "
              . "upgrade-insecure-requests;";
         $response->header('Content-Security-Policy', $csp);
