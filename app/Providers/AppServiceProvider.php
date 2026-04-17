@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             \Illuminate\Http\Request::setTrustedProxies(
                 ['*'], // Ou spécifier les IPs: ['192.168.1.1', '10.0.0.0/8']
-                \Illuminate\Http\Request::HEADER_X_FORWARDED_ALL
+                \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR | \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
             );
         }
     }
