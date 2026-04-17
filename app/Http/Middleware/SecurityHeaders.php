@@ -25,9 +25,9 @@ class SecurityHeaders
 
         // Content Security Policy - Permissive for Filament
         $csp = "default-src 'self'; "
-             . "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
-             . "style-src 'self' 'unsafe-inline' fonts.bunny.net; "
-             . "font-src fonts.bunny.net data:; "
+             . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; "
+             . "style-src 'self' 'unsafe-inline' https:; "
+             . "font-src https: data:; "
              . "img-src 'self' data: https:; "
              . "connect-src 'self' https:; "
              . "frame-ancestors 'none'; "
