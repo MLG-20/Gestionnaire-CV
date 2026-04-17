@@ -67,4 +67,9 @@ Route::middleware(['auth', BlockAdminFromCVDashboard::class])->prefix('dashboard
         ->name('cv.download');
 });
 
+// Filament Admin Login POST route
+Route::post('/admin/login', function () {
+    return redirect('/admin');
+})->name('filament.admin.auth.login.store')->middleware('throttle:5,1');
+
 require __DIR__.'/auth.php';
