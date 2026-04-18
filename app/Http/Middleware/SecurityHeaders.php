@@ -23,14 +23,27 @@ class SecurityHeaders
             $response->headers->set('X-XSS-Protection', '1; mode=block');
 
             // CSP
-            $csp = "default-src 'self'; "
-                 . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; "
-                 . "style-src 'self' 'unsafe-inline' https:; "
-                 . "font-src https: data:; "
-                 . "img-src 'self' data: https:; "
-                 . "connect-src 'self' https:; "
-                 . "frame-ancestors 'none'; "
-                 . "upgrade-insecure-requests;";
+            if (app()->environment('local')) {
+                // En développement : très permissif pour Vite HMR
+                $csp = "default-src *; "
+                     . "script-src * 'unsafe-inline' 'unsafe-eval'; "
+                     . "style-src * 'unsafe-inline'; "
+                     . "img-src * data: blob:; "
+                     . "font-src *; "
+                     . "connect-src *; "
+                     . "frame-ancestors 'none'; "
+                     . "upgrade-insecure-requests;";
+            } else {
+                // En production : strict
+                $csp = "default-src 'self'; "
+                     . "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; "
+                     . "style-src 'self' 'unsafe-inline' https:; "
+                     . "font-src https: data:; "
+                     . "img-src 'self' data: https:; "
+                     . "connect-src 'self' https:; "
+                     . "frame-ancestors 'none'; "
+                     . "upgrade-insecure-requests;";
+            }
             $response->headers->set('Content-Security-Policy', $csp);
 
             $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
