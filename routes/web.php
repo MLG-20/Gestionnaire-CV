@@ -15,9 +15,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Alias route for dashboard
-Route::redirect('/dashboard', '/dashboard/', 301)->name('dashboard');
-
 // Page routes (no prefix)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.view');
@@ -25,6 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/cv', [CvController::class, 'index'])->name('cv.index');
     Route::resource('experiences', ExperienceController::class)->only(['index', 'show']);
 });
+
+// Dashboard route (without trailing slash)
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', BlockAdminFromCVDashboard::class])->name('dashboard');
 
 Route::middleware(['auth', BlockAdminFromCVDashboard::class])->prefix('dashboard')->name('dashboard.')->group(function () {
 
@@ -37,6 +37,7 @@ Route::middleware(['auth', BlockAdminFromCVDashboard::class])->prefix('dashboard
 
     // Profile & Photo
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/cv', [ProfileController::class, 'updateCv'])->name('profile.updateCv');
