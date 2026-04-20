@@ -27,7 +27,7 @@ class CvController extends Controller
     public function index(Request $request): View
     {
         ['user' => $user, 'cvSetting' => $cvSetting] = $this->loadUserData($request);
-        
+
         $template = 'templates.' . $cvSetting->template_name;
         $forPdf   = false;
 
