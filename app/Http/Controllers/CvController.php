@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CvSetting;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Spatie\Browsershot\Browsershot;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CvController extends Controller
 {
@@ -68,44 +68,25 @@ class CvController extends Controller
         // Ajouter le paramètre forPdf à la requête pour l'accessor photo_url
         $request->merge(['forPdf' => true]);
 
-        // Générer le HTML de la vue
-        $html = view($template, compact('user', 'cvSetting', 'forPdf'))->render();
-
-        // Créer un fichier temporaire pour le PDF
-        $nameSlug = str($user->name)->slug();
-        if (empty($nameSlug)) {
-            $nameSlug = 'cv-' . time();
-        }
-        $filename = $nameSlug . '.pdf';
-        $path = storage_path('app/public/' . $filename);
-        
-        // Créer le dossier s'il n'existe pas
-        if (!is_dir(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
-
         try {
-            // Générer le PDF avec Browsershot
-            Browsershot::html($html)
-                ->showBackground()
-                ->printBackground(true)
-                ->format('A4')
-                ->margins(0, 0, 0, 0)
-                // SECURITY FIX: Remove noSandbox() - sandbox must be enabled
-                ->waitUntilNetworkIdle()
-                ->links()
-                ->disableJavascript()
-                ->save($path);
-        } catch (\Exception $e) {
-            // En cas d'erreur, nettoyer et retourner une réponse d'erreur
-            if (file_exists($path)) {
-                unlink($path);
+            // Générer le PDF avec DomPDF
+            $pdf = Pdf::loadView($template, compact('user', 'cvSetting', 'forPdf'))
+                ->setPaper('a4')
+                ->setOption('margin-top', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('margin-left', 0)
+                ->setOption('isPhpEnabled', false);
+
+            $nameSlug = str($user->name)->slug();
+            if (empty($nameSlug)) {
+                $nameSlug = 'cv-' . time();
             }
+            $filename = $nameSlug . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
             return back()->with('error', 'La génération du PDF a échoué. Veuillez réessayer.');
         }
-
-        return response()->download($path, $filename, [
-            'Content-Type' => 'application/pdf',
-        ])->deleteFileAfterSend(true);
     }
 }
