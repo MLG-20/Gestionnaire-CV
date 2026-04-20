@@ -83,7 +83,10 @@ class CvController extends Controller
                 ->setOption('margin-right', 0)
                 ->setOption('margin-bottom', 0)
                 ->setOption('margin-left', 0)
-                ->setOption('isPhpEnabled', false);
+                ->setOption('isPhpEnabled', false)
+                ->setOption('isRemoteEnabled', false)
+                ->setOption('dpi', 96)
+                ->setOption('enable-local-file-access', true);
 
             $nameSlug = str($user->name)->slug();
             if (empty($nameSlug)) {
@@ -96,18 +99,7 @@ class CvController extends Controller
             return back()->with('error', 'La génération du PDF a échoué. Veuillez réessayer.');
         }
     }
-                ->setOption('margin-right', 0)
-                ->setOption('margin-bottom', 0)
-                ->setOption('margin-left', 0)
-                ->setOption('isPhpEnabled', false);
-
-            $nameSlug = str($user->name)->slug();
-            if (empty($nameSlug)) {
-                $nameSlug = 'cv-' . time();
-            }
-            $filename = $nameSlug . '.pdf';
-
-            return $pdf->download($filename);
+}
         } catch (\Exception $e) {
             return back()->with('error', 'La génération du PDF a échoué. Veuillez réessayer.');
         }

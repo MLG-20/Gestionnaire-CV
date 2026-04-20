@@ -42,18 +42,29 @@
     background: white;
     overflow: hidden;
   }
-  @endif
   .cv-container {
     width: 210mm;
     height: 297mm;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow: hidden;
+    display: table;
+  }
+  @else
+  .cv-container {
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    display: table;
+  }
+  @endif
+  
+  .cv-container {
     font-family: Arial, sans-serif;
     font-size: 11pt;
     line-height: 1.4;
-    overflow: hidden;
-    display: table;
   }
   .cv-left {
     display: table-cell;
