@@ -62,6 +62,13 @@ class CvController extends Controller
     public function download(Request $request)
     {
         ['user' => $user, 'cvSetting' => $cvSetting] = $this->loadUserData($request);
+        
+        // Permettre le téléchargement d'un template spécifique via query string
+        $allowedSlugs = array_column(CvSetting::availableTemplates(), 'slug');
+        if ($request->filled('template') && in_array($request->query('template'), $allowedSlugs)) {
+            $cvSetting->template_name = $request->query('template');
+        }
+        
         $template = 'templates.' . $cvSetting->template_name;
         $forPdf   = true;
 
@@ -73,6 +80,22 @@ class CvController extends Controller
             $pdf = Pdf::loadView($template, compact('user', 'cvSetting', 'forPdf'))
                 ->setPaper('a4')
                 ->setOption('margin-top', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('margin-left', 0)
+                ->setOption('isPhpEnabled', false);
+
+            $nameSlug = str($user->name)->slug();
+            if (empty($nameSlug)) {
+                $nameSlug = 'cv-' . time();
+            }
+            $filename = $nameSlug . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            return back()->with('error', 'La génération du PDF a échoué. Veuillez réessayer.');
+        }
+    }
                 ->setOption('margin-right', 0)
                 ->setOption('margin-bottom', 0)
                 ->setOption('margin-left', 0)

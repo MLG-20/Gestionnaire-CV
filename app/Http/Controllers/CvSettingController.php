@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CvSetting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,7 +19,7 @@ class CvSettingController extends Controller
         return view('cv-settings.edit', compact('cvSetting', 'templates'));
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'template_name'   => ['required', 'string', 'in:' . implode(',', array_column(CvSetting::availableTemplates(), 'slug'))],
@@ -32,6 +33,16 @@ class CvSettingController extends Controller
             $validated
         );
 
+        // Si c'est une requête AJAX, retourner JSON
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Personnalisation sauvegardée.',
+                'data' => $validated
+            ]);
+        }
+
+        // Sinon, redirection classique
         return redirect()->route('dashboard.cv-settings.edit')->with('success', 'Personnalisation sauvegardée.');
     }
 }
