@@ -89,7 +89,7 @@ class ProfileController extends Controller
         }
 
         // SECURITY FIX: Convert to WebP to prevent RCE vulnerability
-        $image = \Intervention\Image\ImageManager::imagick()
+        $image = \Intervention\Image\ImageManager::gd()
             ->read($request->file('photo'))
             ->cover(400, 400)  // Force dimensions
             ->toWebp(quality: 85);
